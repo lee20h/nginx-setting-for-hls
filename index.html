@@ -1,40 +1,28 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-    <title>실시간 영상 송출</title>
+    <title>Live Streaming</title>
 </head>
-
 <body>
-
-<video id="video" loop playsinline autoplay muted></video>
-
+<video id="video" controls></video>
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-
 <script>
-    var video = document.getElementById('video');
-    var videoSrc = 'http://localhost:8088/hls/obs_stream.m3u8';
-    if (Hls.isSupported()) {
+    if(Hls.isSupported()) {
+        var video = document.getElementById('video');
         var hls = new Hls();
-        hls.loadSource(videoSrc);
+        hls.loadSource('http://localhost:8088/hls/stream.m3u8'); // 수정된 부분
         hls.attachMedia(video);
-        hls.on(Hls.Events.MANIFEST_PARSED, function () {
-            video.muted = 'muted';
-            video.autoplay = 'autoplay';
-            video.playsinline = 'true';
+        hls.on(Hls.Events.MANIFEST_PARSED,function() {
             video.play();
         });
-    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        video.src = videoSrc;
-        video.addEventListener('loadedmetadata', function () {
-            video.muted = 'muted';
-            video.autoplay = 'autoplay';
-            video.playsinline = 'true';
+    }
+    // 추가: Hls가 지원되지 않는 경우 (예: Safari)
+    else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        video.src = 'http://localhost:8088/hls/stream.m3u8'; // 수정된 부분
+        video.addEventListener('canplay',function() {
             video.play();
         });
     }
 </script>
-
 </body>
-
 </html>
